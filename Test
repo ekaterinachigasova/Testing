@@ -1,0 +1,82 @@
+const { assert } = require("console");
+const {By, Key, Builder} = require("selenium-webdriver");
+require("chromedriver");
+
+async function example(){
+
+let searchString = "Jope"
+let driver = await new Builder(). forBrowser("chrome").build();
+
+//1. Ava leht, logi lehe tiitel
+await driver.get("https://www.weekendshoes.ee/");
+let title = await driver.getTitle();
+
+console.log('1. WeekendShoes.ee lehe tiitel on:' ,title);
+
+//2. Mine: https://www.weekendshoes.ee/naistele/saapad.html
+await driver.get("https://www.weekendshoes.ee/naistele/saapad.html");
+
+console.log('2. On avatud https://www.weekendshoes.ee/naistele/saapad.html leht');
+
+// 3. Lisa üks vabalt valitud toode soovikorvi
+await driver.get("https://www.weekendshoes.ee/mustang-sooja-voodriga-ketsid-653778.html");
+await driver.findElement(By.css('#maincontent > div.columns > div > div.product.media > div.product-addto-links > a')).click();
+
+console.log('3. Toode on lisatud soovikorvi');
+
+// 4. Ava toode soovikorvi kaudu
+setTimeout(async function () {
+        await driver.findElement(By.id('wishlist-link-mobile')).click();
+}, 2000);
+setTimeout(async function () {
+        await driver.findElement(By.className('action primary go-to-wishlist')).click();
+}, 4000);
+
+console.log('4. Soovikorv on avatud');
+
+// 5. Lisa toode ostukorvi
+await driver.get("https://www.weekendshoes.ee/mustang-sooja-voodriga-ketsid-653778.html");
+await driver.findElement(By.xpath('//*[@id="product-addtocart-button"]/span')).click();
+await driver.findElement(By.xpath('//*[@id="product-options-wrapper"]/div/div/div/div/div[3]/div/ul/li[3]/div[1]')).click();
+await driver.findElement(By.xpath('//*[@id="product-addtocart-button"]/span')).click();
+
+console.log('5. Toode on lisatud ostukorvi');
+
+//6. Liigu ostukorvi
+setTimeout(async function() {
+    await driver.findElement(By.className('action viewcart')).click();
+    }, 5000)
+
+console.log('6. Ostukorv on avatud');
+
+//7. Suurenda ostukorvis toote kogust 1 võrra
+setTimeout(async function () {
+    const newLocal = 'action qty increase-qty increase-item-qty-btn';
+    await driver.findElement(By.className(newLocal)).click();
+        }, 10000)
+
+console.log('7. Ostukorvi kogus on suurendatud 1 vorra');
+
+//8. Eemalda toode ostukorvist
+setTimeout(async function (){
+    await driver.findElement(By.className('action action-delete')).click();
+        }, 15000)
+
+console.log('8. Toode on eemaldatud ostukorvist');
+
+// 9. Kasuta otsingut: "Jope"
+await driver.get("https://www.weekendshoes.ee/");
+await driver.findElement(By.className('block-search-trigger top')).click();
+await driver.findElement(By.xpath('//*[@id="search"]')).sendKeys(searchString, Key.RETURN);
+
+console.log('9. Leitud "Jope"');
+
+//10. Filtreeri tulemused "Populaarsus" alusel
+await driver.findElement(By.id('sorter')).click();
+await driver.findElement(By.xpath('//*[@id="sorter"]/optional[1]')).click();
+
+console.log('10. Filtreeritud "Populaarsuse" alusel');
+
+}
+
+example()
